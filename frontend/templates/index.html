@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Flask App</title>
+</head>
+<body>
+    <h1>Click the button</h1>
+    <button onclick="sayHello()">Click me</button>
+    <p id="result"></p>
+
+    <script>
+        async function sayHello() {
+            const response = await fetch("/hello-world");
+            const text = await response.text();
+            document.getElementById("result").innerText = text;
+        }
+    </script>
+</body>
+</html>
