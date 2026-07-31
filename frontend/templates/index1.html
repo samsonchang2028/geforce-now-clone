@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>this finna work</title>
+</head>
+<body>
+    <h1>Add to a queue</h1>
+    <ul id="item-list"></ul>
+    <input id="new-item" placeholder="Put your ID in here pls">
+    <button onclick="addToQueue">Start session</button>
+
+
+    <script>
+        const API_URL = "/api/queue"
+        async function loadQueueItems() {
+            const response = await fetch(API_URL)
+            const items = await response.json();
+
+            const list = document.getElementById("item-list");
+            list.innerHTML = ""
+            items.forEach(item => {
+                const li = document.createElement("li");
+                li.textContent = item.name;
+                list.appendChild(li);
+            });
+        }
+
+        //post a new task into the queue hopefully
+
+        async function addToQueue(){
+            const name = document.getElementById("new-item").value;
+
+            await fetch (API_URL, {
+                method: 'POST',
+                headers: {"Content-Type" : "application/json"},
+                body: JSON.stringify({ name : name })
+            });
+            document.getElementById("new-item").value = "";
+            loadQueueItems();
+        }
+    </script>
+</body>
+</html>
