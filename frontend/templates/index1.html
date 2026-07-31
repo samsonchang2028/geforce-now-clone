@@ -30,15 +30,31 @@
         //post a new task into the queue hopefully
 
         async function addToQueue(){
-            const name = document.getElementById("new-item").value;
+            const inputElement = document.getElementById("new-item");
+            const name= inputElement.value.trim()
+            if (!name) {
+                alert("Please enter an item name.");
+                return;
+            }
 
-            await fetch (API_URL, {
-                method: 'POST',
-                headers: {"Content-Type" : "application/json"},
-                body: JSON.stringify({ name : name })
-            });
-            document.getElementById("new-item").value = "";
+            try{
+                const response =await fetch(API_URL, {
+                    method : "POST",
+                    headers : "application/json",
+                    body : JSON.stringify({ name : name})
+
+                });
+                if (!response.ok) {
+                    throw new Error(`Server responded with code: ${response.status}`);
+                }
+
+
+            inputElement.value = "";
             loadQueueItems();
+            } catch(err)
+            {
+                console.error("failed to add item to queue", error);
+            }
         }
     </script>
 </body>
