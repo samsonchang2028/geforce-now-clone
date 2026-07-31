@@ -9,11 +9,11 @@
     <h1>Add to a queue</h1>
     <ul id="item-list"></ul>
     <input id="new-item" placeholder="Put your ID in here pls">
-    <button onclick="addToQueue">Start session</button>
+    <button onclick="addToQueue()">Start session</button>
 
 
     <script>
-        const API_URL = "/api/queue"
+        const API_URL = "/api/items"
         async function loadQueueItems() {
             const response = await fetch(API_URL)
             const items = await response.json();
@@ -40,7 +40,7 @@
             try{
                 const response =await fetch(API_URL, {
                     method : "POST",
-                    headers : "application/json",
+                    headers : { "Content-Type" : "application/json"},
                     body : JSON.stringify({ name : name})
 
                 });
@@ -48,12 +48,13 @@
                     throw new Error(`Server responded with code: ${response.status}`);
                 }
 
-
+            console.log(`Session starting..., ${name} `);
             inputElement.value = "";
             loadQueueItems();
+
             } catch(err)
             {
-                console.error("failed to add item to queue", error);
+                console.error("failed to add item to queue", err);
             }
         }
     </script>
