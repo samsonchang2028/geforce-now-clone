@@ -1,19 +1,49 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>My Flask App</title>
+    <title>My Items</title>
 </head>
+
 <body>
-    <h1>Click the button</h1>
-    <button onclick="sayHello()">Click me</button>
-    <p id="result"></p>
+    <h1>Items</h1>
+    <ul id="item-list"></ul>
+    <input id="new-item" placeholder="New item name">
+    <button onclick="addItem()">Add</button>
 
     <script>
-        async function sayHello() {
-            const response = await fetch("/hello-world");
-            const text = await response.text();
-            document.getElementById("result").innerText = text;
+        const API_URL = "/api/items";
+
+        // GET items and display them
+        async function loadItems() {
+            const response = await fetch(API_URL);
+            const items = await response.json();
+
+            const list = document.getElementById("item-list");
+            list.innerHTML = "";
+            items.forEach(item => {
+                const li = document.createElement("li");
+                li.textContent = item.name;
+                list.appendChild(li);
+            });
         }
+
+        // POST a new item
+        async function addItem() {
+            const name = document.getElementById("new-item").value;
+
+            await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: name })
+            });
+
+            document.getElementById("new-item").value = "";
+            loadItems(); // refresh the list
+        }
+
+        loadItems(); // run on page load
     </script>
 </body>
+
 </html>
