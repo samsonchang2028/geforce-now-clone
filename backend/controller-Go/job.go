@@ -1,7 +1,7 @@
 package main
 
 type Job struct {
-	ID   int
-	Name string
-	Game string
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	Game string `json:"game"`
 }
