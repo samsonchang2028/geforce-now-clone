@@ -2,12 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
 )
 
-func handleJob(w http.ResponseWriter, r *http.Request, q *Queue) {
+func handleJob(w http.ResponseWriter, r *http.Request, q chan<- Job) {
 	var job Job
 	//write json to address of job from r
 	err := json.NewDecoder(r.Body).Decode(&job)
@@ -19,7 +20,7 @@ func handleJob(w http.ResponseWriter, r *http.Request, q *Queue) {
 
 	job.ID = uuid.NewString()
 
-	q.Enqueue(job)
+	q <- job
 
 	//prep HTTP response back to frontend, tels body im sending json
 	w.Header().Set("Content-Type", "application/json")
@@ -33,11 +34,27 @@ func handleJob(w http.ResponseWriter, r *http.Request, q *Queue) {
 }
 
 func main() {
-	q := &Queue{}
-	http.HandleFunc("/items", func(w http.ResponseWriter, r *http.Request) {
-		handleJob(w, r, q)
+	jobQueue := make(chan Job)
+	go processJobs(jobQueue)
+
+	http.HandleFunc("/api/items", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5000")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		handleJob(w, r, jobQueue)
 	})
 
 	http.ListenAndServe(":8080", nil)
 
+}
+
+func processJobs(jobQueue <-chan Job) {
+	for job := range jobQueue {
+		fmt.Println("processing job: ", job)
+	}
 }

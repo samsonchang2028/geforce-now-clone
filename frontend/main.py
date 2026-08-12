@@ -6,9 +6,9 @@ app = Flask(__name__)
 # items = [{"id": 1, "name": "Bob"}, {"id": 2, "name": "Sam"}]
 
 
-# @app.route("/")
-# def hello():
-#     return "Hello World"
+@app.route("/")
+def hello():
+    return "Hello World"
 
 
 # @app.route("/hello-world")
